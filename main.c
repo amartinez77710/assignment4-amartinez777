@@ -4,20 +4,45 @@
 #include "item.h"
 
 void add_item(Item *item_list, double price, char *sku, char *category, char *name, int index){
-	item_list[index].name = malloc(strlen(name+1));
-	item_list[index].name = name;
+
+	//Allocation for the components	
+	item_list[index].name = malloc(strlen(name)+1);
+	if(item_list[index].name == NULL){
+		printf("Allocation for name failed");
+		return;
+	}
+
+	
+	item_list[index].sku = malloc(strlen(sku)+1);
+	if(item_list[index].sku == NULL){
+		printf("Allocation for SKU failed");
+		return;
+	}
+
+	item_list[index].category = malloc(strlen(category)+ 1);
+	if(item_list[index].category == NULL){
+		printf("Allocation for category failed");
+		return;
+	}
+
+	//Have to use string copy, or else freeing will get complicated
+	
 	item_list[index].price = price;
-	item_list[index].sku = malloc(strlen(sku + 1));
-	item_list[index].sku = sku;
-	item_list[index].category = malloc(strlen(category + 1));
-	item_list[index].category = category;
+	strcpy(item_list[index].name, name);
+	strcpy(item_list[index].sku, sku);
+	strcpy(item_list[index].category, category);
 }
 
 
 void free_items(Item *item_list, int size){
-	free(item_list[size].name);
-	free(item_list[size].sku);
-	free(item_list[size].category);
+	for(int i = 0; i < size; i++){
+		free(item_list[i].name);
+		item_list[i].name = NULL;
+		free(item_list[i].sku);
+		item_list[i].sku = NULL;
+		free(item_list[i].category);
+		item_list[i].category = NULL;
+	}
 }
 
 double average_price(Item *item_list, int size){
@@ -49,12 +74,14 @@ int main(int arguments, char *argv[]){
 	}
 
 
-	//allocating for 5 structs
+	//Allocating for 5 structs
 	Item *pItem = malloc(sizeof(Item)*5);
 	if(pItem == NULL){
 		printf("memory allocation of pItem failed");
 		return 1;
 	}
+
+	//Assigning Items
 	//ITEM 1 --> MACBOOK
 	add_item(pItem, 350.99, "10000", "electronics", "Macbook", 0);
 	print_items(pItem, 0);
@@ -75,14 +102,29 @@ int main(int arguments, char *argv[]){
 	add_item(pItem, 79.99, "20032", "furniture", "Desk Chair", 4);
 	print_items(pItem, 4);
 
+	//AVERAGE
 	double totalAverage = average_price(pItem, 5);
 	printf("\n\nAverage price of all items: $%.2f\n\n", totalAverage);
+
+	//SKU LOOKUP (Command Line)
+	/*Apparently the second while command will cause out of bounds (segmentation fault: core dumped) */
+	
+	int ct = 0;
+	while (ct < 5 && strcmp(pItem[ct].sku, argv[1]) != 0){
+		printf("\nSKU does not match %s, %s\n", pItem[ct].sku, pItem[ct].name); 
+		ct++;
+	}	
+	if(ct < 5){
+		printf("****** SKU FOUND: %s, %s, %s ******\n\n\n", pItem[ct].sku, pItem[ct].name, pItem[ct].category);
+	}
+
 
 	//FREEING MEMORY
 	for(int i = 0; i < 5; i++){
 		free_items(pItem, i);
 	}
-
+	free(pItem);
+	pItem = NULL;
 
 return 0;
 }
