@@ -33,7 +33,7 @@ void add_item(Item *item_list, double price, char *sku, char *category, char *na
 	strcpy(item_list[index].category, category);
 }
 
-
+//Freeing function as we allocated in add_item()
 void free_items(Item *item_list, int size){
 	for(int i = 0; i < size; i++){
 		free(item_list[i].name);
@@ -44,7 +44,7 @@ void free_items(Item *item_list, int size){
 		item_list[i].category = NULL;
 	}
 }
-
+// This Function will will take all the item's prices and divide by the amount of items
 double average_price(Item *item_list, int size){
 	double average = 0;
 	for(int i = 0; i<size; i++){
@@ -53,7 +53,7 @@ double average_price(Item *item_list, int size){
 	average = average/size;
 	return average;
 }
-
+// Function that will print out item details as stated
 void print_items(Item *item_list, int size){
 	printf("\n-----------------\n");
 	printf("ITEM %d\n", size + 1);
